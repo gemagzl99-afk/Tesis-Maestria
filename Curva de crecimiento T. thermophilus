@@ -48,11 +48,11 @@ ggplot(datos_long, aes(x = Tiempo, y = Valor, color = Cepa, group = Cepa, shape 
   ) +
   scale_color_manual(
     values = c("WT" = "#DE2D26", "CRBS" = "#00a1d5", "PAS" = "#217a36"), 
-    labels = c("WT", expression(Delta * italic("crbS")), expression(Delta * italic("pas")))
+    labels = c("WT", expression(Delta * italic("crbs")), expression(Delta * italic("pas")))
   ) +
   scale_shape_manual(
     values = c("WT" = 16, "CRBS" = 17, "PAS" = 18),
-    labels = c("WT", expression(Delta * italic("crbS")), expression(Delta * italic("pas")))
+    labels = c("WT", expression(Delta * italic("crbs")), expression(Delta * italic("pas")))
   ) +
   guides(
     shape = "none", 
