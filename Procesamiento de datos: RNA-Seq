@@ -65,13 +65,16 @@ source activate qiime2-2023.2
 multiqc /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/fastQC/*.zip -o /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/fastQC --data-format json --export
 
 /LUSTRE/bioinformatica_data/virolab/gemag/DatosNovogene/01.RawData/fastqc_results
+
 ```
 
 Descarga y transferencia del genoma de referencia.
 Descargar el genoma completo de Sinorhizobium fredii NGR234 desde la base de datos del NCBI en formato, Download Package. Crear una carpeta (GenomaFredii).
 Posteriormente, pasar el genoma de la PC a la terminal.
 
+
 Indexación y alineamiento
+
 
 ```
 #!/bin/bash
@@ -163,7 +166,9 @@ echo "--- Pipeline de Alineamiento Completo ---"
 ```
 
 
+
 Eliminación de duplicados. Vim.
+
 
 ```
 #!/bin/bash
@@ -219,23 +224,31 @@ echo "Iniciando pre-procesamiento y eliminación de duplicados..."
     echo "Proceso completado para $BAM."
 done
 echo "Todos los archivos BAM han sido procesados y deduplicados."
+
 ```
 
+
 Verificar los archivos de salida y comparar el tamaño de lecturas.
+
 
 ```
 ls -l *.dedup.bam
 ls -lh AWT.sorted.bam AWT.dedup.bam
 ```
 
+
 Descarga y preparación del archivo de anotación (GFF). Para saber exactamente dónde están los genes en el genoma S. fredii.
+
 
 ```
 wget -P /LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/018/545/GCF_000018545.1_ASM1854v1/GCF_000018545.1_ASM1854v1_genomic.gff.gz
 gunzip /LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii/GCF_000018545.1_ASM1854v1_genomic.gff.gz
+
 ```
 
+
 Cuantificación de la expresión con FeatureCounts.
+
 
 ```
 #!/bin/bash
