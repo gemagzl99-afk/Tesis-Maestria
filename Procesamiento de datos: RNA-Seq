@@ -47,6 +47,7 @@ $FASTP/./fastp \
 ```
 
 -Guardar y salir del editor Vim.
+
 ```
 Esc
 :w  Fastpejecutable.slrm
