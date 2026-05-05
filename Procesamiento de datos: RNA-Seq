@@ -1,5 +1,5 @@
-Limpieza de datos con Fastp  (Fastpejecutable.slrm)
-Eliminar adaptadores, secuencias duplicadas y filtrar lecturas de baja calidad. 
+Limpieza de datos con Fastp.
+Elimina adaptadores, secuencias duplicadas y filtra lecturas de baja calidad. Script con editor Vim.
 
 ```
 #!/bin/bash
@@ -45,44 +45,250 @@ $FASTP/./fastp \
  --dedup --detect_adapter_for_pe \
  --thread 16
 ```
->
--Comando para salir de vim
+
+-Guardar y salir del editor Vim.
+```
 Esc
-:w  MultiQC.slrm
+:w  Fastpejecutable.slrm
 :q
+```
 
-+Confirmar que se está ejecutando
-gema.garcia@omica> sbatch Fastpejecutable.slrm
-gema.garcia@omica> squeue
++Confirmar que se está ejecutando el script de fastp.
+```
+sbatch Fastpejecutable.slrm
+squeue
+```
 
-Después de limpiar los datos se crea un directorio para guardar los análisis de control de calidad .
-Se hizo una carpeta nueva en FastClean
+Ejecutar MultiQC de los resultados fastp. Script usado en vim.
 
-[gema.garcia@omica FastClean]$ mkdir fastQC 
-[gema.garcia@omica FastClean]$ cd fastQC/ 
-[gema.garcia@omica fastQC]$ vim 
-i
-
+```
 #!/bin/bash
-##SBATCH -p cicese
-##SBATCH --job-name=fastqc
-##SBATCH --output=fastqc-%j.log
-##SBATCH --error=fastqc-%j.err
-##SBATCH -N 1
-##SBATCH --ntasks-per-node=8
-##SBATCH -t 6-00:00:00
+#SBATCH -p cicese
+#SBATCH --job-name=multiqc
+#SBATCH --output=mul-%j.log
+#SBATCH --error=mul-%j.err
+#SBATCH -N 1
+#SBATCH --mem=100GB
+#SBATCH --ntasks-per-node=24
+#SBATCH -t 06-00:00:00
 
-export PATH=$PATH:/LUSTRE/apps/bioinformatica/FastQC_v0.11.7/:$PATH
-module load gcc-7.2.0
+export PATH=/LUSTRE/apps/Anaconda/2023/miniconda3/bin:$PATH
+source activate qiime2-2023.2
 
-fastqc /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/*.fq.gz -t 8 -o /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/fastQC
+multiqc /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/fastQC/*.zip -o /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/fastQC --data-format json --export
+
+/LUSTRE/bioinformatica_data/virolab/gemag/DatosNovogene/01.RawData/fastqc_results
+```
+
+Descarga y transferencia del genoma de referencia.
+Descargar el genoma completo de Sinorhizobium fredii NGR234 desde la base de datos del NCBI en formato, Download Package. Crear una carpeta (GenomaFredii).
+Posteriormente, pasar el genoma de la PC a la terminal.
+
+Indexación y alineamiento
+```
+#!/bin/bash
+#SBATCH -p cicese
+#SBATCH --job-name=HISAT2_Full_Pipeline
+#SBATCH --output=hisat2_pipeline-%j.log
+#SBATCH --error=hisat2_pipeline-%j.err
+#SBATCH -N 1
+#SBATCH --mem=100GB           
+#SBATCH --ntasks-per-node=24  
+#SBATCH -t 06-00:00:00
+
+# --- CONFIGURACIÓN DE SOFTWARE (USANDO CONDA) ---
+
+# 1. Carga el módulo base de Conda
+module load conda-2023
+
+# 2. AGREGA LA INICIALIZACIÓN DE CONDA 
+# Carga las funciones necesarias para que 'conda activate' funcione en scripts
+source $(conda info --base)/etc/profile.d/conda.sh
+
+# 3. ACTIVA TU ENTORNO PERSONAL
+conda activate hisat2_env
+
+# Si Bowtie2, Jellyfish, Salmon No están en el entorno Conda, mantener rutas:
+export PATH=$PATH:/LUSTRE/apps/bioinformatica/bowtie2/bin/
+export PATH=$PATH:/LUSTRE/apps/bioinformatica/jellyfish-2.3.0/
+export PATH=$PATH:/LUSTRE/apps/bioinformatica/salmon/bin/
+
+module load trinityrnaseq-v2.15.1
+
+# 2. Ejecuta el comando Conda completo para activar el entorno
+# Esto hace que el entorno esté disponible para la ejecución.
 
 
-Esc
-:w  Fastqc.slrm
-:q
+# --- Definición de Rutas (Verificadas) ---
+# Directorio donde está el archivo .fna del genoma
+GENOME_DIR="/LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii"
+GENOME_FILE="GCF_000018545.1_ASM1854v1_genomic.fna"
+INDEX_PREFIX="S_fredii_index"
 
-[gema.garcia@omica fastQC]$ sbatch Fastqc.slrm 
-[gema.garcia@omica fastQC]$ squeue
-[gema.garcia@omica fastQC]$  ls
+# Directorio donde están tus archivos FASTQ limpios (salidas de Fastp)
+
+# Directorio de salida para los archivos BAM
+OUTPUT_DIR="/LUSTRE/bioinformatica_data/virolab/gemag/HISAT2_BAMs"
+mkdir -p "$OUTPUT_DIR"
+
+# --- 1. Indexación del Genoma ---
+echo "--- Iniciando Indexación del Genoma ---"
+# Se ejecuta la indexación en el directorio del genoma.
+cd $GENOME_DIR
+hisat2-build $GENOME_FILE $INDEX_PREFIX
+echo "--- Indexación Completa ---"
+cd - # Volver al directorio de trabajo anterior
+
+
+# --- Lista de Muestras ---
+SAMPLES="AWT BWT3 CMUT DMUT2"
+
+# --- 2. Bucle para Mapeo (Alineamiento) y Ordenamiento ---
+# Bucle para Mapeo, Alineamiento y Ordenamiento
+for SAMPLE in $SAMPLES
+do
+    echo "--- Procesando muestra: $SAMPLE ---"
+
+ # Construcción de las rutas completas
+
+ R1_READS="${INPUT_DIR}/${SAMPLE}_1_clean.fq.gz" # Resultado: AWT_1_clean.fq.gz (CORRECTO)
+    R2_READS="${INPUT_DIR}/${SAMPLE}_2_clean.fq.gz" # Resultado: AWT_2_clean.fq.gz (CORRECTO)
+
+    # --- A. Alineamiento con HISAT2 ---
+    hisat2 -x $GENOME_DIR/$INDEX_PREFIX \
+    -1 $R1_READS \
+    -2 $R2_READS \
+    -S $OUTPUT_DIR/$SAMPLE.sam \
+    --threads 12
+
+    # --- B. Conversión SAM a BAM y Ordenamiento (SAMtools) ---
+    samtools sort -o $OUTPUT_DIR/$SAMPLE.sorted.bam $OUTPUT_DIR/$SAMPLE.sam -@ 12
+
+    # --- C. Limpieza ---
+    rm $OUTPUT_DIR/$SAMPLE.sam
+
+    echo "Finalizado: $SAMPLE.sorted.bam creado en $OUTPUT_DIR"
+done
+
+echo "--- Pipeline de Alineamiento Completo ---"
+```
+
+Eliminación de duplicados. Vim.
+
+```
+#!/bin/bash
+#SBATCH -p cicese
+#SBATCH --job-name=Eliminacion_duplicado
+#SBATCH --output=eliminacion_duplicado-%j.log
+#SBATCH --error=eliminacion_duplicado-%j.err
+#SBATCH -N 1
+#SBATCH --mem=100GB
+#SBATCH --ntasks-per-node=12
+#SBATCH -t 06-00:00:00
+
+
+SAMTOOLS="/home/gema.garcia/miniconda3/envs/bioinfo/bin/samtools"
+
+
+# Lista de archivos BAM ordenados (ARRAY)
+BAM_FILES=("AWT.sorted.bam" "BWT3.sorted.bam" "CMUT.sorted.bam" "DMUT2.sorted.bam")
+
+echo "Iniciando pre-procesamiento y eliminación de duplicados..."
+
+    echo "--- Procesando $BAM ---"
+
+    # Nombres de archivos intermedios y de salida
+    # Reemplaza .sorted.bam por el nuevo sufijo
+    NAME_SORTED="${BAM/sorted.bam/name_sorted.bam}"
+    FIXMATE_BAM="${BAM/sorted.bam/fixmate.bam}"
+    DEDUP_BAM="${BAM/sorted.bam/dedup.bam}"
+
+    # 1. Ordenar por nombre
+    echo "1. Ordenando por nombre: $NAME_SORTED"
+    $SAMTOOLS sort -n -@ 12 -o "$NAME_SORTED" "$BAM"
+
+    # 2. Arreglar mates y añadir etiquetas MC/MD
+    echo "2. Arreglando mates (fixmate): $FIXMATE_BAM"
+    $SAMTOOLS fixmate -m -@ 12 "$NAME_SORTED" "$FIXMATE_BAM"
+
+    # 3. Reordenar por posición (necesario para markdup y featureCounts)
+    echo "3. Reordenando por posición"
+    $SAMTOOLS sort -@ 12 -o "temp.$BAM" "$FIXMATE_BAM"
+
+    # 4. Eliminar duplicados
+    echo "4. Eliminando duplicados: $DEDUP_BAM"
+    $SAMTOOLS markdup -r -@ 12 "temp.$BAM" "$DEDUP_BAM"
+
+    # 5. Indexación del nuevo BAM deduplicado
+    echo "5. Indexando $DEDUP_BAM..."
+    $SAMTOOLS index "$DEDUP_BAM"
+# 6. Limpieza de archivos intermedios para ahorrar espacio
+    echo "6. Limpiando archivos intermedios..."
+    rm "$NAME_SORTED" "$FIXMATE_BAM" "temp.$BAM"
+
+    echo "Proceso completado para $BAM."
+done
+echo "Todos los archivos BAM han sido procesados y deduplicados."
+```
+
+Verificar los archivos de salida y comparar el tamaño de lecturas.
+
+```
+ls -l *.dedup.bam
+ls -lh AWT.sorted.bam AWT.dedup.bam
+```
+
+Descarga y preparación del archivo de anotación (GFF). Para saber exactamente dónde están los genes en el genoma S. fredii.
+
+```
+wget -P /LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/018/545/GCF_000018545.1_ASM1854v1/GCF_000018545.1_ASM1854v1_genomic.gff.gz
+gunzip /LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii/GCF_000018545.1_ASM1854v1_genomic.gff.gz
+```
+
+Cuantificación de la expresión con FeatureCounts.
+
+```
+#!/bin/bash
+#SBATCH -p cicese
+#SBATCH --job-name=feature_counts
+#SBATCH --output=$OUTPUT_DIR/featurecounts-%j.log
+#SBATCH --error=$OUTPUT_DIR/featurecounts-%j.err
+#SBATCH -N 1
+#SBATCH --mem=100GB
+#SBATCH --ntasks-per-node=12
+#SBATCH -t 06-00:00:00
+
+# Agrega la carpeta 'bin' del entorno Conda al PATH del trabajo SLURM
+export PATH="$CONDA_ENV_BASE/bin:$PATH"
+
+# 3. VERIFICACIÓN DE ANOTACIÓN Y DATOS
+# RUTA CORRECTA A TU ARCHIVO GFF/GFF3
+ANNOTATION_FILE="/LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii/GCF_000018545.1_ASM1854v1_genomic.gff"
+
+# Lista de archivos BAM deduplicados para conteo
+DEDUP_BAM_FILES=(
+    "AWT.dedup.bam"
+    "BWT3.dedup.bam"
+    "CMUT.dedup.bam"
+    "DMUT2.dedup.bam"
+)
+# Ruta completa para el archivo de salida de la matriz de conteo
+OUTPUT_FILE="$OUTPUT_DIR/counts_matrix.txt"
+
+# 4. EJECUCIÓN DE FEATURECOUNTS
+echo "Iniciando conteo de reads con featureCounts..."
+echo "Los resultados se guardarán en la carpeta: $OUTPUT_DIR"
+# featureCounts, con la corrección -g Parent
+featureCounts \
+-p \
+-t exon \
+-g Parent \
+-a "$ANNOTATION_FILE" \
+-o "$OUTPUT_FILE" \
+-T 8 \
+"${DEDUP_BAM_FILES[@]}"
+
+echo "Conteo completado. Matriz de conteo guardada en $OUTPUT_FILE."
+```
+
 
