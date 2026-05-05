@@ -45,7 +45,7 @@ $FASTP/./fastp \
  --dedup --detect_adapter_for_pe \
  --thread 16
 ```
-
+>
 -Comando para salir de vim
 Esc
 :w  MultiQC.slrm
