@@ -72,6 +72,7 @@ Descargar el genoma completo de Sinorhizobium fredii NGR234 desde la base de dat
 Posteriormente, pasar el genoma de la PC a la terminal.
 
 Indexación y alineamiento
+
 ```
 #!/bin/bash
 #SBATCH -p cicese
@@ -158,7 +159,9 @@ do
 done
 
 echo "--- Pipeline de Alineamiento Completo ---"
+
 ```
+
 
 Eliminación de duplicados. Vim.
 
