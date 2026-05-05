@@ -1,13 +1,6 @@
 Limpieza de datos con Fastp  (Fastpejecutable.slrm)
 Eliminar adaptadores, secuencias duplicadas y filtrar lecturas de baja calidad. 
 
-```bash
-$FASTP/./fastp \
-  -i $DATA/AWT/AWT_1.fq.gz -I $DATA/AWT/AWT_2.fq.gz \
-  -o $OUTDIR/AWT_1_clean.fq.gz -O $OUTDIR/AWT_2_clean.fq.gz \
-  --dedup --detect_adapter_for_pe \
-  --thread 16
-
 #!/bin/bash
 #SBATCH -p cicese
 #SBATCH --job-name=fastp
