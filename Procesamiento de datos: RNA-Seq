@@ -46,20 +46,6 @@ $FASTP/./fastp \
  --thread 16
 ```
 
--Guardar y salir del editor Vim.
-
-```
-Esc
-:w  Fastpejecutable.slrm
-:q
-```
-
-+Confirmar que se está ejecutando el script de fastp.
-```
-sbatch Fastpejecutable.slrm
-squeue
-```
-
 Ejecutar MultiQC de los resultados fastp. Script usado en vim.
 
 ```
