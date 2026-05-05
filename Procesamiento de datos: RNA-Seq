@@ -1,6 +1,7 @@
 Limpieza de datos con Fastp  (Fastpejecutable.slrm)
 Eliminar adaptadores, secuencias duplicadas y filtrar lecturas de baja calidad. 
 
+```
 #!/bin/bash
 #SBATCH -p cicese
 #SBATCH --job-name=fastp
@@ -43,7 +44,7 @@ $FASTP/./fastp \
  -o $OUTDIR/DMUT2_1_clean.fq.gz -O $OUTDIR/DMUT2_2_clean.fq.gz \
  --dedup --detect_adapter_for_pe \
  --thread 16
-
+```
 
 -Comando para salir de vim
 Esc
