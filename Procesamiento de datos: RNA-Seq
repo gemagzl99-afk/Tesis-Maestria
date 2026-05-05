@@ -1,1 +1,94 @@
+Limpieza de datos con Fastp  (Fastpejecutable.slrm)
+Eliminar adaptadores, secuencias duplicadas y filtrar lecturas de baja calidad. 
+
+```bash
+$FASTP/./fastp \
+  -i $DATA/AWT/AWT_1.fq.gz -I $DATA/AWT/AWT_2.fq.gz \
+  -o $OUTDIR/AWT_1_clean.fq.gz -O $OUTDIR/AWT_2_clean.fq.gz \
+  --dedup --detect_adapter_for_pe \
+  --thread 16
+
+#!/bin/bash
+#SBATCH -p cicese
+#SBATCH --job-name=fastp
+#SBATCH -o fastp.%N.%j.out
+#SBATCH -e fastp.%N.%j.err
+#SBATCH -N 1
+#SBACTH -n 24
+#SBATCH --mem=100GB
+
+#ruta a fastp
+FASTP="/LUSTRE/bioinformatica_data/virolab/gemag/fastp"
+
+#directorio con archivos fq.gz
+
+DATA="/LUSTRE/bioinformatica_data/virolab/gemag/DatosNovogene/01.RawData"
+OUTDIR="/LUSTRE/bioinformatica_data/virolab/gemag/FastClean"
+
+#ejecutar fastp
+
+$FASTP/./fastp \
+ -i $DATA/AWT/AWT_1.fq.gz -I $DATA/AWT/AWT_2.fq.gz \
+ -o $OUTDIR/AWT_1_clean.fq.gz -O $OUTDIR/AWT_2_clean.fq.gz \
+ --dedup --detect_adapter_for_pe \
+ --thread 16
+
+$FASTP/./fastp \
+ -i $DATA/BWT3/BWT3_1.fq.gz -I $DATA/BWT3/BWT3_2.fq.gz \
+ -o $OUTDIR/BWT3_1_clean.fq.gz -O $OUTDIR/BWT3_2_clean.fq.gz \
+ --dedup --detect_adapter_for_pe \
+ --thread 16
+
+$FASTP/./fastp \
+ -i $DATA/CMUT/CMUT_1.fq.gz -I $DATA/CMUT/CMUT_2.fq.gz \
+ -o $OUTDIR/CMUT_1_clean.fq.gz -O $OUTDIR/CMUT_2_clean.fq.gz \
+ --dedup --detect_adapter_for_pe \
+ --thread 16
+
+$FASTP/./fastp \
+ -i $DATA/DMUT2/DMUT2_1.fq.gz -I $DATA/DMUT2/DMUT2_2.fq.gz \
+ -o $OUTDIR/DMUT2_1_clean.fq.gz -O $OUTDIR/DMUT2_2_clean.fq.gz \
+ --dedup --detect_adapter_for_pe \
+ --thread 16
+
+
+-Comando para salir de vim
+Esc
+:w  MultiQC.slrm
+:q
+
++Confirmar que se está ejecutando
+gema.garcia@omica> sbatch Fastpejecutable.slrm
+gema.garcia@omica> squeue
+
+Después de limpiar los datos se crea un directorio para guardar los análisis de control de calidad .
+Se hizo una carpeta nueva en FastClean
+
+[gema.garcia@omica FastClean]$ mkdir fastQC 
+[gema.garcia@omica FastClean]$ cd fastQC/ 
+[gema.garcia@omica fastQC]$ vim 
+i
+
+#!/bin/bash
+##SBATCH -p cicese
+##SBATCH --job-name=fastqc
+##SBATCH --output=fastqc-%j.log
+##SBATCH --error=fastqc-%j.err
+##SBATCH -N 1
+##SBATCH --ntasks-per-node=8
+##SBATCH -t 6-00:00:00
+
+export PATH=$PATH:/LUSTRE/apps/bioinformatica/FastQC_v0.11.7/:$PATH
+module load gcc-7.2.0
+
+fastqc /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/*.fq.gz -t 8 -o /LUSTRE/bioinformatica_data/virolab/gemag/FastClean/fastQC
+
+
+Esc
+:w  Fastqc.slrm
+:q
+
+[gema.garcia@omica fastQC]$ sbatch Fastqc.slrm 
+[gema.garcia@omica fastQC]$ squeue
+[gema.garcia@omica fastQC]$  ls
 
