@@ -1,3 +1,19 @@
+Se descargaron los datos obtenidos de Novogene y se almacenaron en una carpeta "Datos Novogene". Posteriormente, se verificó la integridad de los archivos mediante el archivo MD5.txt, el cual contiene códigos conocidos como hasehes
+MD5 para confirmar que los archivos no sufrieron daños ni modificaciones durante la transferencia. Cada archivo original posee una "huella digital" única generada mediante el algoritmo MD5; por lo tanto, cualquier cambio en el archivo,
+incluso de solo un byte, produce una modificación en dicho código. Para realizar esta verificación se ejecutó el siguiente comando.
+
+```
+md5sum -c MD5.txt
+```
+
+Una vez comprobada la integridad de los datos, se generaron reportes de control de calidad usando FastQC. 
+
+```
+fastqc *.fq.gz -o fastqc_results
+```
+
+Este análisis evaluó todos los archivos FASTQ comprimidos (.fq.gz) presentes en la carpeta de trabajo y generó los archivos de salida *_fastqc.html y *_fastqc.zip, correspondientes a las muestras AWT, BWT3, CMUT y DMUT2.
+
 Limpieza de datos con Fastp.
 Elimina adaptadores, secuencias duplicadas y filtra lecturas de baja calidad. Script con editor Vim.
 
