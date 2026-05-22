@@ -112,7 +112,7 @@ results_df <- results_df %>%
     gene_label = gsub("^gene-", "", gene)
   )
 
-# Clasificar genes según significancia
+# Clasificar genes según su significancia
 results_df <- results_df %>%
   mutate(
     is_significant = case_when(
@@ -259,10 +259,10 @@ HEATMAP
 
 tiff(
   filename = "heatmap_S_fredii.tiff", 
-  width = 10,           # Ancho en pulgadas
-  height = 12,          # Alto en pulgadas (ajusta según el número de genes)
+  width = 10,           
+  height = 12,         
   units = "in", 
-  res = 300,            # Resolución (DPI)
+  res = 300,           
   compression = "lzw"
 )
 
@@ -281,9 +281,9 @@ pheatmap(
   annotation_colors = ann_colors,
   show_rownames = TRUE,
   show_colnames = TRUE,
-  fontsize = 14,        # ← NUEVO: Esto aumenta el tamaño de la leyenda "Condition"
-  fontsize_row = 10,    # genes
-  fontsize_col = 14,    # NOMBRES DE LAS MUESTRAS
+  fontsize = 14,       
+  fontsize_row = 10,    
+  fontsize_col = 14,   
   cellheight = 10,
   clustering_distance_rows = "euclidean",
   clustering_distance_cols = "euclidean",
@@ -337,7 +337,6 @@ ggplot(pca_data, aes(PC1, PC2, color = condition)) +
     axis.title = element_text(face = "bold", size = 18),
     axis.text = element_text(size = 16),
     
-    # ← CONTORNO NEGRO DE LA GRÁFICA
     panel.border = element_rect(
       color = "black",
       fill = NA,
@@ -486,7 +485,7 @@ results_df <- results_df %>%
     )
   )
 
-# Selección de los 10 genes significativos
+# Selección de los 10 genes más significativos
 
 top10_genes <- results_df %>%
   arrange(padj) %>%
@@ -564,7 +563,7 @@ volcano_plot <- ggplot(results_df,
     axis.ticks = element_line(color = "black", linewidth = 1.2),
     axis.ticks.length = unit(0.25, "cm"),
     
-    # Leyenda en la parte superior sin recuadro
+
     legend.position = "top",
     legend.direction = "horizontal",
     legend.background = element_blank(),
@@ -626,10 +625,10 @@ HEATMAP
 
 tiff(
   filename = "heatmap_S_fredii.tiff", 
-  width = 10,           # Ancho en pulgadas
-  height = 12,          # Alto en pulgadas (ajusta según el número de genes)
+  width = 10,
+  height = 12,          
   units = "in", 
-  res = 300,            # Resolución (DPI)
+  res = 300,            
   compression = "lzw"
 )
 
@@ -645,9 +644,9 @@ pheatmap(
   annotation_colors = ann_colors,
   show_rownames = TRUE,
   show_colnames = TRUE,
-  fontsize = 14,        # ← NUEVO: Esto aumenta el tamaño de la leyenda "Condition"
-  fontsize_row = 10,    # genes
-  fontsize_col = 14,    # NOMBRES DE LAS MUESTRAS
+  fontsize = 14,        
+  fontsize_row = 10,   
+  fontsize_col = 14,   
   cellheight = 10,
   clustering_distance_rows = "euclidean",
   clustering_distance_cols = "euclidean",
@@ -702,7 +701,6 @@ ggplot(pca_data, aes(PC1, PC2, color = condition)) +
     axis.title = element_text(face = "bold", size = 18),
     axis.text = element_text(size = 16),
     
-    # ← CONTORNO NEGRO DE LA GRÁFICA
     panel.border = element_rect(
       color = "black",
       fill = NA,
