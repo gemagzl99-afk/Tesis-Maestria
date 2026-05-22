@@ -494,7 +494,7 @@ top10_genes <- results_df %>%
 print(top10_genes$gene_label)
 ```
 
-Volcano Plot
+VOLCANO PLOT
 
 ```
 volcano_plot <- ggplot(results_df,
@@ -621,7 +621,7 @@ ann_colors <- list(
 HEATMAP
 
 ```
-# LIMPIAR NOMBRES DE GENES (Quitar "gene-")
+# Quitar "gene-"
 
 tiff(
   filename = "heatmap_S_fredii.tiff", 
