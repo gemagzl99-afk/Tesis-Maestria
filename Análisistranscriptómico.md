@@ -1,4 +1,4 @@
-MUTANTES VS WT
+# MUTANTES VS WT
 
 Cargar librerías requeridas
 
@@ -351,7 +351,7 @@ ggplot(pca_data, aes(PC1, PC2, color = condition)) +
 
 
 
-MUTANTES VS AWT
+# MUTANTES VS AWT
 
 
 
