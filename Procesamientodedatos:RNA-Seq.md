@@ -35,7 +35,7 @@ La confirmación “Ok” en los archivos indica que estos se encuentran en perf
 Es importante mencionar que los datos obtenidos de secuenciación constan de dos archivos por muestra; las lecturas Forward (1) y Reverse (2). Esta configuración es característica de Paired-End, la cual mejora la resolución del análisis transcriptómico al proporcionar información posicional de ambos extremos de la biblioteca de insertos, resultando en un alineamiento más confiable contra el genoma de referencia
 
 
-Limpieza de lecturas
+## Limpieza de lecturas
 
 Para la etapa de limpieza de lecturas, se utilizó fastp, con el objetivo de eliminar lecturas duplicadas (--dedup), identificar y eliminar adaptadores presentes en los extremos de lecturas paired-end (--detect_adapter_for_pe), generar archivos de lecturas limpias y mejorar la calidad general de las secuencias mediante el filtrado y recorte de bases de baja calidad. 
 
@@ -52,7 +52,8 @@ Comandos de función para Vim.
 Los scripts se guardan con terminación .slrm
 ```
 
-Fastp
+
+## Fastp
 
 Script usado en Vim.
 
@@ -127,7 +128,7 @@ multiqc /LUSTRE/bioinformatica_data/virolab/gemag/FastQC_Reports/*.html -o /LUST
 
 Para comparar la calidad entre los datos crudos y las lecturas después de la limpieza, se realizó un análisis con FastQC de los datos originales y, posteriormente, se integraron los reportes mediante MultiQC para obtener una evaluación global y facilitar la comparación entre ambos conjuntos de datos. 
 
-FastQC
+## FastQC
 
 Script usado en Vim. 
 ```
@@ -146,7 +147,7 @@ module load gcc-7.2.0
 fastqc /LUSTRE/bioinformatica_data/virolab/gemagi/DatosNovogene/01.RawData/*.fq.gz -t 8 -o /LUSTRE/bioinformatica_data/virolab/gemag/DatosNovogene/01.RawData/fastqc_results
 ```
 
-MultiQC de datos originales
+## MultiQC de datos originales
 
 Script usado en Vim.
 
@@ -168,12 +169,12 @@ multiqc /LUSTRE/bioinformatica_data/virolab/gemag/DatosNovogene/01.RawData/fastq
 ```
 
 
-Descarga y transferencia del genoma de referencia
+## Descarga y transferencia del genoma de referencia
 
 Se descargó el genoma completo de Sinorhizobium fredii NGR234 desde la base de datos de NCBI en formato Download Package. Posteriormente, se creó la carpeta GenomaFredii para almacenar los archivos del genoma de referencia y, finalmente, estos archivos fueron transferidos desde la computadora local hacia la terminal de trabajo en Linux.
 
 
-Indexación y alineamiento
+## Indexación y alineamiento
 
 Script usado en Vim.
 
@@ -247,7 +248,7 @@ echo "--- Pipeline de Alineamiento Completo ---"
 
 ```
 
-Eliminación de duplicados
+## Eliminación de duplicados
 
 Los datos obtenidos tras el alineamiento se exportaron en formato BAM (Binary Alignment Map) y posteriormente se procesaron para eliminar duplicados de PCR generados durante la construcción de las bibliotecas, utilizando el comando markdup. Script usado en Vim. 
 
@@ -318,7 +319,7 @@ ls -lh AWT.sorted.bam AWT.dedup.bam
 ```
 
 
-Descarga y preparación del archivo de anotación (GFF)
+## Descarga y preparación del archivo de anotación (GFF)
 
 Con el objetivo de identificar la localización exacta de los genes dentro del genoma de Sinorhizobium fredii NGR234, se descargó el archivo de anotación genómica en formato GFF (General Feature Format). Este archivo contiene información sobre la posición y organización de los elementos genéticos presentes en el genoma, incluyendo genes codificantes, regiones de ARN y otras características funcionales.
 
@@ -330,7 +331,7 @@ gunzip /LUSTRE/bioinformatica_data/virolab/gemag/GenomaFredii/GCF_000018545.1_AS
 ```
 
 
-Cuantificación de la expresión con FeatureCounts
+## Cuantificación de la expresión con FeatureCounts
 
 Finalmente, se realizó la cuantificación de la expresión génica mediante la herramienta FeatureCounts, la cual permite asignar y contabilizar las lecturas alineadas a cada gen anotado en el genoma de referencia. Script usado en Vim. 
 
