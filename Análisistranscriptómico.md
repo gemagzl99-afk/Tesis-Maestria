@@ -1,6 +1,6 @@
 # MUTANTES VS WT
 
-Cargar librerías requeridas
+## Cargar librerías requeridas
 
 ```
 library(dplyr)
@@ -13,13 +13,13 @@ library(ggrepel)
 library(pheatmap)
 ```
 
-Establecer el directorio de trabajo 
+## Establecer el directorio de trabajo 
 
 ```
 setwd("C:/Users/gemag/OneDrive/Documentos/Proyecto de Maestria/Novogene/FeatureCounts")
 ```
 
-Importar matriz de conteos
+## Importar matriz de conteos
 ```
 counts_data <- read.table(
   "counts_matrix.txt",
@@ -29,7 +29,7 @@ counts_data <- read.table(
 )
 ```
 
-Convertir Geneid a rownames y eliminar metadatos
+## Convertir Geneid a rownames y eliminar metadatos
 
 ```
 count_matrix <- counts_data %>%
@@ -39,7 +39,7 @@ count_matrix <- counts_data %>%
 head(count_matrix)
 ```
 
-Metadatos de muestras
+## Metadatos de muestras
 
 ```
 sample_names <- colnames(count_matrix)
@@ -58,7 +58,7 @@ col_data
 # Verificar orden
 all(rownames(col_data) == colnames(count_matrix))
 ```
-DESEQ2
+## DESEQ2
 
 ```
 dds <- DESeqDataSetFromMatrix(
@@ -76,7 +76,7 @@ results_raw <- results(
 )
 ```
 
-Procesar resultados
+## Procesar resultados
 
 ```
 results_df <- as.data.frame(results_raw) %>%
@@ -99,7 +99,7 @@ write.csv(
 )
 ```
 
-Preparar datos para Volcano Plot
+## Preparar datos para Volcano Plot
 
 ```
 # Convertir nombres de fila a columna
@@ -128,7 +128,7 @@ top_genes <- results_df %>%
   slice_head(n = 10)
 ```
 
-VOLCANO PLOT
+## VOLCANO PLOT
 
 ```
 volcano_plot <- ggplot(
@@ -205,7 +205,7 @@ volcano_plot <- ggplot(
 print(volcano_plot)
 ```
 
-Limpiar nombres de muestras en dds
+## Limpiar nombres de muestras en dds
 
 ```
 colnames(dds) <- gsub("\\.dedup\\.bam$", "", colnames(dds))
@@ -229,7 +229,7 @@ res <- res[order(res$padj), ]
 top_genes_names <- rownames(res)[1:50]
 ```
 
-Extraer datos para HEATMAP
+## Extraer datos para HEATMAP
 
 ```
 heatmap_data <- assay(rld)[top_genes_names, ]
@@ -252,7 +252,7 @@ ann_colors <- list(
   )
 )
 ```
-HEATMAP
+## HEATMAP
 
 ```
 # Quitar "gene-"
@@ -292,7 +292,7 @@ pheatmap(
 )
 ```
 
-PCA
+## PCA
 
 ```
 pca_data <- plotPCA(
@@ -355,7 +355,7 @@ ggplot(pca_data, aes(PC1, PC2, color = condition)) +
 
 
 
-Cargar librerías requeridas
+## Cargar librerías requeridas
 
 ```
 library(dplyr)
@@ -374,7 +374,7 @@ Establecer el directorio de trabajo
 setwd("C:/Users/gemag/OneDrive/Documentos/Proyecto de Maestria/Novogene/FeatureCounts")
 ```
 
-Importar matriz de conteos
+## Importar matriz de conteos
 ```
 counts_data <- read.table(
   "counts_matrix.txt",
@@ -388,7 +388,7 @@ count_matrix <- counts_data %>%
   select(-(1:5))
 ```
 
-Excluir muestra BWT3
+## Excluir muestra BWT3
 
 ```
 count_matrix <- count_matrix %>%
@@ -397,7 +397,7 @@ count_matrix <- count_matrix %>%
 colnames(count_matrix)
 ```
 
-Metadatos de muestras
+## Metadatos de muestras
 
 ```
 sample_names <- colnames(count_matrix)
@@ -417,7 +417,7 @@ rownames(col_data) <- sample_names
 # verificar
 all(rownames(col_data) == colnames(count_matrix))
 ```
-DESEQ2
+## DESEQ2
 
 ```
 dds <- DESeqDataSetFromMatrix(
@@ -465,7 +465,7 @@ write.csv(
 )
 ```
 
-Preparar datos para volcano plot
+## Preparar datos para volcano plot
 
 ```
 results_df <- results_df %>%
@@ -494,7 +494,7 @@ top10_genes <- results_df %>%
 print(top10_genes$gene_label)
 ```
 
-VOLCANO PLOT
+## VOLCANO PLOT
 
 ```
 volcano_plot <- ggplot(results_df,
@@ -575,7 +575,7 @@ print(volcano_plot)
 
 ```
 
-Limpiar nombres de muestras en dds
+## Limpiar nombres de muestras en dds
 
 ```
 # Limpiar nombres de muestras en dds
@@ -597,7 +597,7 @@ res <- res[order(res$padj), ]
 top_genes_names <- rownames(res)[1:50]
 ```
 
-Extraer datos para HEATMAP
+## Extraer datos para HEATMAP
 
 ```
 heatmap_data <- assay(rld)[top_genes_names, ]
@@ -618,7 +618,7 @@ ann_colors <- list(
 )
 ```
 
-HEATMAP
+## HEATMAP
 
 ```
 # Quitar "gene-"
@@ -655,7 +655,7 @@ pheatmap(
 )
 ```
 
-PCA
+## PCA
 
 ```
 pca_data <- plotPCA(
